@@ -7,7 +7,6 @@ public class RationsResourcePool {
 
     private final int rationCapacity;
     private final ConcurrentLinkedQueue availableRations;
-    private ReentrantLock lock;
     private int counter;
 
     public RationsResourcePool(int numberOfRations) {
@@ -22,22 +21,31 @@ public class RationsResourcePool {
         }
     }
 
-    public Ration getRation(int memberNo) {
+    public synchronized Ration getRation(int memberNo) {
 
+        boolean hasEaten = false;
         // System.out.println("\n\n number of rations" + availableRations.toString() + "\n\n");
-
-        if (availableRations.isEmpty() && memberNo == counter) {
-            cook();
-            if (counter == rationCapacity)
+        try {
+            if (availableRations.isEmpty()) {
+                cook();
+            }
+            if (memberNo == counter) {
+                hasEaten = true;
+            }
+            if (hasEaten) {
+                return (Ration) availableRations.poll();
+            }
+        } finally {
+            if (counter == 9 && hasEaten)
                 counter = 0;
-            else
+            else if (hasEaten)
                 counter++;
         }
 
-        return (Ration) availableRations.poll();
+        return null;
     }
 
-    public void cook() {
+    public synchronized void cook() {
         for (int i = 0; i < rationCapacity; i++) {
             Ration currentRation = new Ration();
             availableRations.add(currentRation);

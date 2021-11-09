@@ -18,10 +18,10 @@ public class Ration {
         }
     }
 
-    public void cook(){
+    public void cook() {
         System.out.println("Cook is cooking");
         try {
-            Thread.sleep(1);
+            Thread.sleep(2);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

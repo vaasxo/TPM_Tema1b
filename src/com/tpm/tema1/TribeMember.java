@@ -9,6 +9,8 @@ public class TribeMember implements Runnable {
     private boolean isDone;
     private final ReentrantLock lock = new ReentrantLock();
     private final int memberNo;
+    private int timesEaten;
+    private int timesCooked;
 
     TribeMember(RationsResourcePool rationsResourcePool, boolean isCook, int memberNo) {
         this.rationsResourcePool = rationsResourcePool;
@@ -18,27 +20,30 @@ public class TribeMember implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (timesEaten < 10) {
             try {
                 lock.lock();
                 Ration ration = rationsResourcePool.getRation(memberNo);
 
-                if (isCook) {
-                    System.out.println("Cook is cooking");
-                    try {
-                        ration.cook();
-                    } finally {
-                        exit();
-                    }
-                } else {
-                    try {
-                        ration.eat(memberNo);
-                    } finally {
-                        exit();
+                if (ration != null) {
+                    if (isCook) {
+                        System.out.println("Cook is cooking");
+                        try {
+                            ration.cook();
+                            if(timesCooked == 19)
+                                return;
+                        } finally {
+                            exit();
+                        }
+                    } else {
+                        try {
+                            ration.eat(memberNo);
+                            timesEaten += 1;
+                        } finally {
+                            exit();
+                        }
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             } finally {
                 lock.unlock();
             }

@@ -1,0 +1,3 @@
+Dupa rularea de mai multe ori a ambelor implementari, am observat ca timpii de executie sunt diferiti pentru fiecare
+rulare individuala, dar sunt in mare parte egali intre implementarea de la a si cea de la b. Diferenta e la a doua
+zecimala intre executii, cu rezultate de la 0.105 la 0.115 atat la a cat si la b.

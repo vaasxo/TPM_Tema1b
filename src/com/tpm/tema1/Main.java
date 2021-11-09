@@ -1,14 +1,17 @@
 package com.tpm.tema1;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Main {
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
+
+        Instant start = Instant.now();
 
         final int TribeMembers = 10;
         final int AvailableRations = 5;
@@ -18,10 +21,10 @@ public class Main {
 
         final RationsResourcePool rationsResourcePool = new RationsResourcePool(AvailableRations);
 
-        Future<?> f = executorService.submit(new TribeMember(rationsResourcePool,true, 9));
+        Future<?> f = executorService.submit(new TribeMember(rationsResourcePool, true, 9));
         futures.add(f);
 
-        for (int i = 0; i < TribeMembers-1; i++) {
+        for (int i = 0; i < TribeMembers; i++) {
             f = executorService.submit(new TribeMember(rationsResourcePool, false, i));
             futures.add(f);
         }
@@ -29,12 +32,17 @@ public class Main {
         Thread.sleep(100);
 
         boolean allDone = true;
-        for(Future<?> future : futures) {
+        for (Future<?> future : futures) {
             allDone &= future.isDone();
         }
-        if (allDone)
+
+        Instant end = Instant.now();
+        System.out.print(Duration.between(start, end));
+
+        if (allDone) {
             System.exit(1);
-        else
+        } else {
             System.exit(2);
+        }
     }
 }
